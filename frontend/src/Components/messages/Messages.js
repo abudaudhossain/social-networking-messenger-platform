@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SendMessage from "./SendMessage";
 import ReceivedMessage from "./ReceivedMessage";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import MessageSenderForm from "./MessageSenderForm";
 
+
+
 const baseUrl = "http://localhost:5000/api/v1";
 
-const Messages = () => {
+const Messages = ({socket}) => {
+    const messagesEndRef = useRef(null);
     const [messages, setMessage] = useState([]);
     const [isCreateNewChat, setIsCreateNewChat] = useState(false);
     const [accessToken, setAccessToken] = useState(
@@ -52,16 +55,26 @@ const Messages = () => {
         setIsLoading(true);
     }, [id]);
 
+    useEffect(()=>{
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    },[messages])
+
     console.log(chatId, "ch");
     console.log(messages.messages);
+
+    socket.on(`${chatId}`, function (msg) {
+        console.log(msg);
+        setMessage([...messages, msg]);
+    });
 
     if (!isLoading) return <h1>loading ...</h1>;
 
     return (
         <>
-            <div className="">
+          
+            <div className="" >
                 {isCreateNewChat ? (
-                    <h1>Create New chatId</h1>
+                    <h1>Create New Chat Room</h1>
                 ) : (
                     <>
                         {messages.length > 0 ? (
@@ -77,8 +90,12 @@ const Messages = () => {
                         ) : (
                             <h1>Send Your First Message</h1>
                         )}
-
-                       <MessageSenderForm chatId={chatId} accessToken={accessToken} />
+                        <div ref={messagesEndRef}></div>
+                        <MessageSenderForm
+                            chatId={chatId}
+                            accessToken={accessToken}
+                            socket={socket}
+                        />
                     </>
                 )}
             </div>

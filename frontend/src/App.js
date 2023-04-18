@@ -7,6 +7,9 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Messages from "./Components/messages/Messages";
 
+import { io } from "socket.io-client";
+const socket = io("http://localhost:5000");
+
 function App() {
     return (
         <BrowserRouter>
@@ -14,9 +17,9 @@ function App() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
-                <Route path="/" element={<Layout />}>
-                    <Route path="/" element={<Home />}/>
-                    <Route path="/:id" element={<Messages />}/>
+                <Route path="/" element={<Layout socket={socket} />}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/:id" element={<Messages socket={socket} />} />
                 </Route>
             </Routes>
             {/* </Layout> */}

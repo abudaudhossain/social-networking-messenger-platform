@@ -1,9 +1,10 @@
-import React from "react";
-import User from "../../User";
+import React, { useEffect, useState } from "react";
+import User from "../../User/User";
 import { Link } from "react-router-dom";
 
-const index = ({ users}) => {
-    // if(!users) return <h3>Loading...</h3>
+const Sidebar = ({ users, socket }) => {
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
+
     return (
         <aside
             id="logo-sidebar"
@@ -13,9 +14,16 @@ const index = ({ users}) => {
             <div className="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
                 <ul className="space-y-2 font-medium h-96">
                     {users &&
-                        users.map((user) => (
-                            <User key={user.userId} user={user}/>
-                        ))}
+                        users.map(
+                            (appUser) =>
+                                user?.userId !== appUser.userId && (
+                                    <User
+                                        key={appUser.userId}
+                                        userApp={appUser}
+                                        socket={socket}
+                                    />
+                                )
+                        )}
                 </ul>
 
                 <ul className="pt-4 mt-4 space-y-2 font-medium border-t border-gray-200 dark:border-gray-700">
@@ -137,4 +145,4 @@ const index = ({ users}) => {
     );
 };
 
-export default index;
+export default Sidebar;

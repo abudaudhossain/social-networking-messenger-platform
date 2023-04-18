@@ -4,25 +4,33 @@ import React, { useEffect, useState } from "react";
 const baseUrl = "http://localhost:5000/api/v1";
 
 const Menubar = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
     const [accessToken, setAccessToken] = useState(
         localStorage.getItem("accessToken")
     );
 
     useEffect(() => {
         setAccessToken(localStorage.getItem("accessToken"));
+        if (!user) {
+            axios({
+                method: "get",
+                url: `${baseUrl}/me`,
 
-        axios({
-            method: "get",
-            url: `${baseUrl}/me`,
-
-            headers: {
-                authorization: `Bearer ${accessToken}`,
-            },
-        }).then(function (response) {
-            console.log(response.data.data);
-            setUser(response.data.data);
-        });
+                headers: {
+                    authorization: `Bearer ${accessToken}`,
+                },
+            }).then(function (response) {
+                console.log(response.data.data);
+                let newUser = response.data.data;
+                if (!(user?.userProfileId === newUser?.userProfileId)) {
+                    console.log("update");
+                    localStorage.setItem("user", JSON.stringify(newUser));
+                    
+                    setUser(response.data.data);
+                    window.location.reload();
+                }
+            });
+        }
     }, []);
     return (
         <nav className="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -55,7 +63,7 @@ const Menubar = () => {
                             <img
                                 src="https://flowbite.com/docs/images/logo.svg"
                                 className="h-8 mr-3"
-                                alt="FlowBite Logo"
+                                alt="Chat APP Logo"
                             />
                             <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">
                                 Chat APP
@@ -70,14 +78,17 @@ const Menubar = () => {
                                     data-dropdown-toggle="language-dropdown-menu"
                                     class="inline-flex items-center font-medium justify-center px-4 py-2 text-sm text-gray-900 dark:text-white rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-white"
                                 >
-                                     <img
+                                    <img
                                         className="w-8 h-8 rounded-full mx-2"
-                                        src={user?.profilePhoto ? user.profilePhoto :"https://flowbite.com/docs/images/people/profile-picture-5.jpg"}
+                                        src={
+                                            user?.profilePhoto
+                                                ? user.profilePhoto
+                                                : "https://flowbite.com/docs/images/people/profile-picture-5.jpg"
+                                        }
                                         alt="user photo"
                                     />
-                                   {user?.name}
+                                    {user?.name}
                                 </button>
-                                
                             </div>
                         </div>
                     </div>

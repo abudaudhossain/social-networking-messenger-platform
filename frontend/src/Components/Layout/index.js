@@ -5,16 +5,17 @@ import { Outlet } from "react-router-dom";
 
 import Menubar from "./Menubar/Menubar";
 import Footer from "./Footer";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar/Sidebar";
 import SendMessage from "../messages/SendMessage";
 import ReceivedMessage from "../messages/ReceivedMessage";
 
 const Layout = ({ children, ...props }) => {
+    // const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
     const navigate = useNavigate();
     const [users, setUsers] = useState(null);
     const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
     // const [messages, setMessages] = useState([]);
-    const userId = "643b819c6effc1fc545aa11b";
+    // const userId = "643b819c6effc1fc545aa11b";
     // let accessToken = localStorage.getItem("accessToken");
 
     useEffect(() => {
@@ -40,7 +41,7 @@ const Layout = ({ children, ...props }) => {
         <>
             <Menubar />
 
-            <Sidebar users={users} />
+            <Sidebar users={users} socket={props.socket} />
 
             <div className="p-4 sm:ml-64">
                 <div className="p-4 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
